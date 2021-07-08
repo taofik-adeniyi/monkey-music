@@ -255,7 +255,6 @@ const styles = StyleSheet.create({
     borderColor: "#ECAE2A",
     borderRadius: 20,
     margin: 10,
-    textTransform: 'lowercase'
   },
   continue: {
     backgroundColor: "#FEA90D",
