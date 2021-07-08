@@ -161,7 +161,7 @@ const Register = ({ navigation }: Props) => {
             style={styles.input}
             placeholder="Username/Email ID"
             placeholderTextColor="white"
-            value={username}
+            value={username.toLowerCase()}
             onChangeText={(val) => dispatch( { payload : val, type: 'USERNAME'} ) }
           />
           <TextInput
@@ -169,7 +169,7 @@ const Register = ({ navigation }: Props) => {
             placeholder="Password"
             placeholderTextColor="white"
             secureTextEntry={true}
-            value={password}
+            value={password.toLowerCase()}
             onChangeText={(val) => dispatch( { payload : val, type: 'PASSWORD'} ) }
           />
           <TextInput
@@ -177,7 +177,7 @@ const Register = ({ navigation }: Props) => {
             placeholder="Confirm Password"
             placeholderTextColor="white"
             secureTextEntry={true}
-            value={retypepassword}
+            value={retypepassword.toLowerCase()}
             onChangeText={(val) => dispatch( { payload : val, type: 'RETYPEPASSWORD'} ) }
           />
 
@@ -255,6 +255,7 @@ const styles = StyleSheet.create({
     borderColor: "#ECAE2A",
     borderRadius: 20,
     margin: 10,
+    textTransform: 'lowercase'
   },
   continue: {
     backgroundColor: "#FEA90D",
