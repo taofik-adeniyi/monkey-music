@@ -1,7 +1,12 @@
-const initialState = {
-    username: 'katigbanoma',
+type myState = {
+    username: string;
+    password: string;
+    retypepassword: string;
+}
+const initialState: myState = {
+    username: '',
     password: '',
-    retypepassword: ''
+    retypepassword: '',
 }
 const registerReducer = (state= initialState, action: { type: string; payload: string; }) => {
     switch (action.type) {
@@ -13,6 +18,7 @@ const registerReducer = (state= initialState, action: { type: string; payload: s
         case 'RETYPEPASSWORD':
             return {...state, retypepassword: action.payload}
         default:
+            return state
             break;
     } 
 }

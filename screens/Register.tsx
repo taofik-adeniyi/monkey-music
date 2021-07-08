@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,29 +7,139 @@ import {
   StyleSheet,
   TextInput,
   Pressable,
-  Button
+  ActivityIndicator
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Entypo, AntDesign, Ionicons } from '@expo/vector-icons';
 import Modal from "../components/Modal";
+import { useSelector, useDispatch } from "react-redux";
+import { setUsername, setPassword, setRetypePassword } from "../redux/actions/register";
+import { StackScreenProps } from '@react-navigation/stack';
+import { firebase } from '../src/firebase/config'
 
-const Register = ({ navigation }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [retypePassword, setRetypePassword] = useState("");
-  const [modal, setModal] = useState(false);
+type RootStackParamList = {
+  Home: undefined;
+};
+
+type Props = StackScreenProps<RootStackParamList>;
+
+const Register = ({ navigation }: Props) => {
+
+  const checkifLoggedIn = async ()=>{
+    const obj = await AsyncStorage.getItem('userDetails')
+    const res = JSON.parse(obj)
+    const myTK = res.token
+    if(myTK) {
+      navigation.navigate('Home')
+    }
+    return
+  }
+  useEffect(()=>{
+    // checkifLoggedIn()
+  }, [])
+
+  const username = useSelector(state => state.register.username)
+  const password = useSelector(state => state.register.password)
+  const retypepassword = useSelector(state => state.register.retypepassword)
+  const prompt = useSelector(state => state.prompt)
+  const [passError, setPassError] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const dispatch = useDispatch();
 
   
-
-  const handleSubmit = () => {
-      if(password !== retypePassword){
-          console.warn("Password mismatch")
+  const handleSubmit = async () => {
+      if(password !== retypepassword){
+        setPassError(true)
+          return
       }
-      const showUp = setTimeout(() => {
-        setModal(true)
-      }, 500);
-      // clearTimeout(showUp)
 
-      navigation.navigate('Home')
+      const setData = async (data) => {
+        try {
+          const mydata = JSON.stringify(data)
+          await AsyncStorage.setItem('userDetails', mydata)
+          console.log('d set data')
+        } catch (error) {
+          console.log(error)         
+        }
+      }
+
+      firebase
+            .auth()
+            .createUserWithEmailAndPassword(username, password)
+            .then((response: { user: { uid: any; }; }) => {
+                const uid = response.user.uid
+                const data = {
+                    id: uid,
+                    username: username,
+                    password: password
+                };
+                const usersRef = firebase.firestore().collection('users')
+                usersRef
+                    .doc(uid)
+                    .set(data)
+                    .then((document) => {
+                        const userData = document.data()
+                        console.log('>>>>>>>>userData', userData)
+                        setData(userData)
+                        navigation.navigate('Home')
+                    })
+                    .catch((error: any) => {
+                        console.log(error)
+                    });
+            })
+            .catch((error: any) => {
+                console.log(error)
+        });
+      
+      setTimeout(()=>{
+        setLoading(true)
+      }, 1000)
+      setTimeout(()=>{
+        setLoading(false)
+      }, 2000)
+      setTimeout(() =>{
+        dispatch({ 
+          type: 'PROMPT'
+        })
+      }, 3000)
+
+      // const token = "hellotoken"
+      // console.log(username)
+      // console.log(retypepassword)
+      // console.log(password)
+      // console.log(token)
+      // const details = {
+      //   user: username, 
+      //   pass: password, 
+      //   rpass: retypepassword, 
+      //   token: token
+      // }
+      // try {
+      //   const userDetails = JSON.stringify(details)
+      //   await AsyncStorage.setItem('userDetails', userDetails)
+      // } catch (e) {
+      //   console.warn(e)
+      // }
+      
+
+      setTimeout(()=>{
+        navigation.navigate('Home')
+      }, 4000)
+      setTimeout(()=>{
+        dispatch({ 
+          type: 'PROMPT'
+        })
+      }, 5000)
+  }
+  if (loading) {
+    return (
+    <View style={styles.indicator}>
+      <ActivityIndicator 
+      size="large" 
+    />
+    </View>
+    )
   }
   return (
     <View style={styles.container}>
@@ -38,7 +148,7 @@ const Register = ({ navigation }) => {
         <View style={styles.goback}>
             <Ionicons name="arrow-back" size={24} color="yellow" />
         </View>
-        <Modal show={modal} setModal={setModal} />
+        <Modal show={prompt} />
         <View style={styles.header}>
           <Text style={styles.title}>Create</Text>
           <Text style={styles.title}>an account</Text>
@@ -52,24 +162,35 @@ const Register = ({ navigation }) => {
             placeholder="Username/Email ID"
             placeholderTextColor="white"
             value={username}
-            onChangeText={(text) => setUsername(text)}
+            onChangeText={(val) => dispatch( { payload : val, type: 'USERNAME'} ) }
           />
           <TextInput
-            style={[styles.input, {color: 'blue'}]}
+            style={styles.input}
             placeholder="Password"
             placeholderTextColor="white"
-            // secureTextEntry={true}
+            secureTextEntry={true}
             value={password}
-            onChangeText={(text) => setPassword(text)}
+            onChangeText={(val) => dispatch( { payload : val, type: 'PASSWORD'} ) }
           />
           <TextInput
             style={styles.input}
             placeholder="Confirm Password"
             placeholderTextColor="white"
             secureTextEntry={true}
-            // value={retypePassword}
-            onChangeText={(text) => setRetypePassword(text)}
+            value={retypepassword}
+            onChangeText={(val) => dispatch( { payload : val, type: 'RETYPEPASSWORD'} ) }
           />
+
+          {
+            passError && (
+              <View style={styles.mismatch}>
+                <Text style={{color: 'red'}}>
+                  Password mismatch Retype password
+                </Text>
+              </View>
+            ) 
+          }
+
           <Pressable style={styles.continue} onPress={handleSubmit}>
             <Text style={styles.contText}>Continue</Text>
           </Pressable>
@@ -162,7 +283,20 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       justifyContent: 'center',
       marginTop: 10,
-  }
+  },
+  mismatch: {
+    backgroundColor: 'white', 
+    borderColor: 'red', 
+    padding: 10, 
+    borderRadius: 15, 
+    width: '80%',
+    marginTop: 10,
+    alignItems: "center",
+    },
+    indicator: {
+        flex: 1,
+        justifyContent: "center"
+    }
 });
 
 export default Register;

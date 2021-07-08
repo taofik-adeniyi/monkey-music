@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useDispatch } from "react-redux";
+import { setPrompt } from "../redux/actions/prompt";
 
 type Props = {
     show: boolean;
     children?: React.FC;
-    setModal: ()=>{};
 }
-const Modal = ({ show, setModal }: Props) => {
-  const [visible, setVisible] = useState(true);
+
+const Modal = ({ show }: Props) => {
+  const dispatch = useDispatch()
   if (show) {
       return (
         <View style={styles.modal}>
@@ -35,8 +36,8 @@ const Modal = ({ show, setModal }: Props) => {
               <Text style={styles.textOne}>Succesfull</Text>
               <Text style={styles.textTwo}>Redirecting to Home !</Text>
             </View>
-            <View style={{marginTop: 10}}>
-              <Pressable onPress={() => setModal(false)}>
+            <View>
+              <Pressable onPress={() => dispatch(setPrompt())}>
                 <Text style={{fontSize: 35, color: '#FEA90D', fontWeight: 'bold'}} >...</Text>
               </Pressable>
             </View>
@@ -44,7 +45,7 @@ const Modal = ({ show, setModal }: Props) => {
       );
   }
   return (
-      <View><Text>..loading</Text></View>
+      <View />
   )
 };
 const styles = StyleSheet.create({

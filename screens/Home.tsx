@@ -1,19 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Home = () => {
+  const [myObject, setObject] = useState("");
+  const checkUserDetails = async () => {
+    try {
+      const value = await AsyncStorage.getItem("userDetails");
+      if (value !== null) {
+        setObject(JSON.parse(value));
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const logOut = async () => {
+    try {
+      await AsyncStorage.removeItem("userDetails");
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    checkUserDetails();
+    // logOut()
+  }, []);
+
   return (
     <View style={styles.wrapper}>
       <View>
         <Text>Welcome Home</Text>
       </View>
-      <Text>Name</Text>
-      <View style={styles.row}>
-        <Text>Name: Taofik Adeniyi</Text>
-      </View>
+      <View>
       <Text>Your details have been saved</Text>
+      </View>
       <View style={styles.row}>
-        <Text>Email bidemi64@gmail.com</Text>
+        <Text>Username: { myObject } </Text>
       </View>
     </View>
   );
