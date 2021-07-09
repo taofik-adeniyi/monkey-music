@@ -33,6 +33,7 @@
     },
     "packagerOpts": {
       "nonPersistent": true
-    }
+    },
+    "description": ""
   }
 }
