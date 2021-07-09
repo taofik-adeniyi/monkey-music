@@ -11,12 +11,12 @@ if (!global.atob) { global.atob = decode }
 
 export default function App(){
   return (
-    <Provider store={store}>
       <SafeAreaProvider>
-        <StatusBar />
-        <Navigation />
+        <Provider store={store}>
+            <Navigation />
+            <StatusBar />
+        </Provider> 
       </SafeAreaProvider>
-    </Provider> 
   )
 }
 

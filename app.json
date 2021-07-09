@@ -27,6 +27,10 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+
+    "packagerOpts": {
+      "nonPersistent": "--nonPersistent"
     }
   }
 }

@@ -10,12 +10,14 @@ import {
   ActivityIndicator
 } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Entypo, AntDesign, Ionicons } from '@expo/vector-icons';
 import Modal from "../components/Modal";
 import { useSelector, useDispatch } from "react-redux";
 import { setUsername, setPassword, setRetypePassword } from "../redux/actions/register";
 import { StackScreenProps } from '@react-navigation/stack';
 import { firebase } from '../src/firebase/config'
+const bgtwo = require('../assets/images/smallsax.png')
+import bgtwotwo  from '../assets/images/smallsax.png'
+import { Entypo, Feather } from '@expo/vector-icons';
 
 type RootStackParamList = {
   Home: undefined;
@@ -141,12 +143,14 @@ const Register = ({ navigation }: Props) => {
     </View>
     )
   }
+  const bg = { uri: 'https://cdn.pixabay.com/photo/2018/05/13/16/19/saxophone-3397023_1280.jpg' }
+  
   return (
     <View style={styles.container}>
-      <ImageBackground source={require("./smallsax.jpg")} style={styles.image}>
+      <ImageBackground source={bgtwotwo} style={styles.image}>
         <View style={styles.overlay} />
         <View style={styles.goback}>
-            <Ionicons name="arrow-back" size={24} color="yellow" />
+            <Feather name="arrow-left" size={24} color="yellow" />
         </View>
         <Modal show={prompt} />
         <View style={styles.header}>
@@ -200,7 +204,7 @@ const Register = ({ navigation }: Props) => {
         <View style={styles.icons}>
             <Entypo name="facebook-with-circle" size={35} color="blue" />
             <View style={{width: 20}}/>
-            <AntDesign name="google" size={35} color="red" />
+            <Entypo name="google-" size={35} color="red" />
         </View>
         </View>
       </ImageBackground>
