@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Home = () => {
+const Home = ({route, navigation}) => {
+  
+  // const { userData } = route.params
   const [myObject, setObject] = useState("");
   const checkUserDetails = async () => {
     try {
       const value = await AsyncStorage.getItem("userDetails");
-      if (value !== null) {
-        setObject(JSON.parse(value));
-      }
+      setObject(value)
+      // if (value !== null) {
+      //   setObject(JSON.parse(value));
+      // }
     } catch (e) {
       console.log(e);
     }
@@ -17,13 +20,13 @@ const Home = () => {
   const logOut = async () => {
     try {
       await AsyncStorage.removeItem("userDetails");
+      navigation.navigate('Register')
     } catch (e) {
       console.log(e);
     }
   };
   useEffect(() => {
     checkUserDetails();
-    // logOut()
   }, []);
 
   return (
@@ -37,9 +40,13 @@ const Home = () => {
       <View style={styles.row}>
         <Text>Username: { myObject } </Text>
       </View>
+      <Pressable onPress={logOut}>
+        <Text>Log out</Text>
+      </Pressable>
     </View>
-  );
+  )
 };
+
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,

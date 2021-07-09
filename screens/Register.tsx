@@ -29,15 +29,15 @@ const Register = ({ navigation }: Props) => {
 
   const checkifLoggedIn = async ()=>{
     const obj = await AsyncStorage.getItem('userDetails')
-    const res = JSON.parse(obj)
-    const myTK = res.token
-    if(myTK) {
+    // const res = JSON.parse(obj)
+    // const myTK = res.token
+    if(obj) {
       navigation.navigate('Home')
     }
     return
   }
   useEffect(()=>{
-    // checkifLoggedIn()
+    checkifLoggedIn()
   }, [])
 
   const username = useSelector(state => state.register.username)
@@ -66,29 +66,35 @@ const Register = ({ navigation }: Props) => {
         }
       }
 
-      firebase
-            .auth()
-            .createUserWithEmailAndPassword(username, password)
-            .then((response: { user: { uid: any; }; }) => {
-                const uid = response.user.uid
-                const data = {
-                    id: uid,
-                    username: username,
-                    password: password
-                };
-                const usersRef = firebase.firestore().collection('users')
-                usersRef
-                    .doc(uid)
-                    .set(data)
-                    .then((document) => {
-                        const userData = document.data()
-                        console.log('>>>>>>>>userData', userData)
-                        setData(userData)
-                        navigation.navigate('Home')
-                    })
-                    .catch((error: any) => {
-                        console.log(error)
-                    });
+      firebase.auth().createUserWithEmailAndPassword(username, password)
+            .then(async (userCredentials) => {
+              // console.log(userCredentials)
+              // console.log('token', userCredentials.user.stsTokenManager.accessToken)
+              // console.log('uid', userCredentials.user.uid)
+              // console.log('mail', userCredentials.user.email)
+              await AsyncStorage.setItem('userDetails', userCredentials.user.email)
+                // const uid = response.user.uid
+                // const data = {
+                //     id: uid,
+                //     username: username,
+                //     password: password
+                // };
+                // const usersRef = firebase.firestore().collection('users')
+                // usersRef
+                //     .doc(uid)
+                //     .set(data)
+                //     .then((document) => {
+                //       console.log('from set data', data)
+                //         const userData = document.data()
+                //         console.log('>>>>>>>>userData', data)
+                //         setData(userData)
+                //         navigation.navigate('Home', 
+                //           userData
+                //         )
+                //     })
+                //     .catch((error: any) => {
+                //         console.log(error)
+                //     });
             })
             .catch((error: any) => {
                 console.log(error)

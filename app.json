@@ -17,20 +17,22 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.katigbanoma.monkeymusic"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "jsEngine": "hermes",
+      "package": "com.katigbanoma.monkeymusic"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-
     "packagerOpts": {
-      "nonPersistent": "--nonPersistent"
+      "nonPersistent": true
     }
   }
 }
